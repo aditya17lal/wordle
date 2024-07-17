@@ -3,14 +3,14 @@ import pygame
 
 def load(file):
     with open(file) as file:
-        return [line[:5].upper() for line in file.readlines()]
+        return [line[:5].strip().upper() for line in file.readlines()]
 
-GUESSING = load("Wordle/dict_english.txt")
-ANSWERS = load("Wordle/dict_wordle.txt")
+GUESSING = load("./dict_english.txt")
+ANSWERS = load("./dict_wordle.txt")
 ANSWER = random.choice(ANSWERS)
 
 WIDTH, HEIGHT, MARGIN, T_MARGIN, B_MARGIN, LR_MARGIN = 500, 600, 10, 30, 50, 50
-GREY, GREEN, YELLOW, WHITE = (100, 100, 100), (80, 200, 70), (250, 200, 100), (255,255,255)
+GREY, GREEN, YELLOW, WHITE = (100, 100, 100), (80, 200, 70), (250, 200, 100), (255, 255, 255)
 
 # Initialize Pygame
 pygame.init()
@@ -20,7 +20,6 @@ pygame.display.set_caption("Wordle")
 SQ_SIZE = (WIDTH - 4 * MARGIN - 2 * LR_MARGIN) // 5
 FONT = pygame.font.SysFont('sansbold', SQ_SIZE)
 
-# Initialize game variables
 INPUT = ""
 GUESSES = []
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -47,13 +46,13 @@ while running:
                     GAME_OVER = INPUT == ANSWER
                     INPUT = ""
             elif event.key == pygame.K_SPACE:
-                GAME_OVER = False
                 ANSWER = random.choice(ANSWERS)
                 GUESSES = []
                 INPUT = ""
-            elif len(INPUT) < 5 and not GAME_OVER:
-                INPUT = INPUT + event.unicode.upper()
-            
+                GAME_OVER = False
+            elif len(INPUT) < 5 and not GAME_OVER and event.unicode.isalpha():
+                INPUT += event.unicode.upper()
+
     # Clear the screen
     screen.fill(WHITE)
 
@@ -86,8 +85,8 @@ while running:
         letters = FONT.render(ANSWER, False, GREY)
         surface = letters.get_rect(center=(WIDTH // 2, HEIGHT - B_MARGIN // 2 - MARGIN))
         screen.blit(letters, surface)
+
     # Update the screen
     pygame.display.flip()
 
-# Quit Pygame
 pygame.quit()
